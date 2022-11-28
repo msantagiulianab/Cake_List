@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Cake List</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="error_fetching_data">Error Fetching data</string>
+    <string name="read_more">Read more ></string>
+    <string name="background_image">Background image</string>
+    <string name="hide_details">Hide Description</string>
+    <string name="show_details">Show Description</string>
+    <string name="find_a_cake">Find a Cake</string>
+    <string name="sort_z_a">Sort Z-A</string>
+    <string name="sort_a_z">Sort A-Z</string>
+    <string name="search_icon">Search icon</string>
+    <string name="results">%1$s RESULTS</string>
 </resources>
