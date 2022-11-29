@@ -4,12 +4,9 @@ import com.example.cakelist.api.CakesApi
 import com.example.cakelist.api.RetrofitHelper
 import com.example.cakelist.models.Cake
 import com.example.cakelist.sealed.DataState
-import com.google.firebase.database.*
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class CakesRepository {
 
@@ -21,18 +18,60 @@ class CakesRepository {
         fetchDataFromInternet()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun fetchDataFromInternet() {
         _response.value = DataState.Loading
-        val quotesApi = RetrofitHelper.getInstance().create(CakesApi::class.java)
-        GlobalScope.launch {
-            val listOfCakes = quotesApi.getQuotes().body()?.distinct()?.sortedBy { it.title }
-            if (listOfCakes.isNullOrEmpty()) {
-                _response.value = DataState.Failure("Empty or null list")
+        CoroutineScope(Dispatchers.IO).launch {
+            val cakesApi = RetrofitHelper.getInstance().create(CakesApi::class.java).getCakes()
+            if (cakesApi.isSuccessful) {
+                val listOfCakes = cakesApi.body()?.distinct()?.sortedBy { it.title }
+                _response.value = DataState.Success(listOfCakes!!)
             } else {
-                _response.value = DataState.Success(listOfCakes)
+                _response.value = DataState.Failure("Empty or null list")
             }
         }
+
+
+////        private var movieLiveData = MutableLiveData<List<Result>>()
+////        fun getPopularMovies() {
+//           cakesApi.getCakes() .getPopularMovies("69d66957eebff9666ea46bd464773cf0").enqueue(object  : Callback<Movies>{
+//                override fun onResponse(call: Call<Movies>, response: Response<Movies>) {
+//                    if (response.body()!=null){
+//                        movieLiveData.value = response.body()!!.results
+//                    }
+//                    else{
+//                        return
+//                    }
+//                }
+//                override fun onFailure(call: Call<Movies>, t: Throwable) {
+//                    Log.d("TAG",t.message.toString())
+//                }
+//            })
+//        }
+//        fun observeMovieLiveData() : LiveData<List<Result>> {
+//            return movieLiveData
+//        }
+
+
+//        val customersListLiveData: MutableLiveData<ArrayList<CustomerDataModel>> = MutableLiveData<ArrayList<CustomerDataModel>>()
+//
+//        CoroutineScope(Dispatchers.Default).launch {
+//
+//            launch(Dispatchers.IO) {
+//                val apiInterface = RetrofitHelper.getInstance().create(CakesApi::class.java)
+//                var response = apiInterface.getQuotes().body()?.distinct()?.sortedBy { it.title }
+//                withContext(Dispatchers.Default)
+//                {
+//                    response?.let {
+//                        if (response.isSuccessful()) {
+//                            customersListLiveData.postValue(response.body()!!.data)
+//                        }
+//
+//                    }
+//                }
+//            }
+//
+//        }
+
     }
 
     /**

@@ -3,10 +3,6 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
-    id 'com.google.gms.google-services'
-    id 'com.google.firebase.crashlytics'
-    id 'com.google.firebase.firebase-perf'
-    id 'kotlinx-serialization'
 }
 
 android {
@@ -102,17 +98,6 @@ dependencies {
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
-
-    // Kotlin Serialization
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
-
-    // Firebase
-    implementation 'com.google.firebase:firebase-database-ktx:20.0.5'
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.2.2'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.2.12'
-    implementation 'com.google.firebase:firebase-analytics-ktx:21.1.0'
-    implementation 'com.google.firebase:firebase-config-ktx:21.1.1'
-    implementation 'com.google.firebase:firebase-perf-ktx:20.1.0'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
