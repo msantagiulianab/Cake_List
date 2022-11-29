@@ -107,7 +107,7 @@ private fun CakeDetailsHeader(cake: Cake) {
                 .padding(start = 20.dp)
         ) {
             Text(
-                text = cake.title.uppercase(),
+                text = cake.title,
                 color = Color.Black,
                 style = MaterialTheme.typography.h2,
             )

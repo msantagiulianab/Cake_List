@@ -306,13 +306,11 @@ private fun CakeCard(
                     .weight(0.65f)
                     .padding(16.dp)
             ) {
-                cake.title.uppercase().let {
-                    Text(
-                        text = it,
-                        color = Color.Black,
-                        style = MaterialTheme.typography.h2
-                    )
-                }
+                Text(
+                    text = cake.title,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.h2
+                )
                 Text(
                     text = stringResource(R.string.read_more),
                     color = colorResource(id = R.color.read_more_orange),
