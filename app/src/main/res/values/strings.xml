@@ -4,8 +4,6 @@
     <string name="error_fetching_data">Error Fetching data</string>
     <string name="read_more">Read more ></string>
     <string name="background_image">Background image</string>
-    <string name="hide_details">Hide Description</string>
-    <string name="show_details">Show Description</string>
     <string name="cake_image">Cake image</string>
     <string name="find_a_cake">Find a Cake</string>
     <string name="sort_z_a">Sort Z-A</string>

@@ -7,7 +7,10 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.cakelist.ui.cakes.CakesScreen
+import com.example.cakelist.ui.details.CakeDetailsScreen
 import com.example.cakelist.ui.theme.CakeListTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -61,6 +64,32 @@ private fun CakesApp() {
                 CakesScreen { navigationCakeId ->
                     navController.navigate("$destinationCakeDetails/$navigationCakeId")
                 }
+            }
+            composable(
+                route = "$destinationCakeDetails/{$cake_id}",
+                arguments = listOf(navArgument(cake_id) {
+                    type = NavType.StringType
+                }),
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { 300 },
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
+                        )
+                    ) + fadeIn(animationSpec = tween(300))
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { 300 },
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
+                        )
+                    ) + fadeOut(animationSpec = tween(300))
+                }
+            ) {
+                CakeDetailsScreen(navController)
             }
         }
     )
