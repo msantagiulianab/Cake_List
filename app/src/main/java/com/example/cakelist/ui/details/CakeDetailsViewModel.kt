@@ -19,7 +19,7 @@ class CakeDetailsViewModel @Inject constructor(
 
     init {
         val cakeId = savedStateHandle.get<String>(cake_id)
-        cakeState.value = repository.getCake(cakeId!!) //TODO
+        cakeState.value = repository.getCake(cakeId!!)
     }
 
 }

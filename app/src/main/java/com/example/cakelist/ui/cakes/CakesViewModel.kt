@@ -3,15 +3,36 @@ package com.example.cakelist.ui.cakes
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.cakelist.CakesRepository
 import com.example.cakelist.models.Cake
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CakesViewModel  @Inject constructor(
-    val repository: CakesRepository
+class CakesViewModel @Inject constructor(
+    private val repository: CakesRepository
 ) : ViewModel() {
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    init {
+        loadCakes()
+    }
+
+    fun loadCakes() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            delay(3000L)
+            repository.fetchDataFromInternet()
+            _isLoading.value = false
+        }
+    }
 
     /**
      * SEARCH
@@ -22,7 +43,6 @@ class CakesViewModel  @Inject constructor(
         this.query.value = query
     }
 
-    // TODO
     val cakesState = repository.response
 
     val results = mutableStateOf(0)

@@ -20,15 +20,20 @@ class CakesRepository {
         fetchDataFromInternet()
     }
 
-    private fun fetchDataFromInternet() {
+    fun fetchDataFromInternet() {
         _response.value = DataState.Loading
         CoroutineScope(Dispatchers.IO).launch {
-            val cakesApi = RetrofitHelper.getInstance().create(CakesApi::class.java).getCakes()
-            if (cakesApi.isSuccessful) {
-                val listOfCakes = cakesApi.body()?.distinct()?.sortedBy { it.title }
-                _response.value = DataState.Success(listOfCakes!!)
-            } else {
-                _response.value = DataState.Failure("Empty or null list")
+            try {
+                val cakesApi = RetrofitHelper.getInstance().create(CakesApi::class.java).getCakes()
+                if (cakesApi.isSuccessful) {
+                    val listOfCakes = cakesApi.body()?.distinct()?.sortedBy { it.title }
+                    _response.value = DataState.Success(listOfCakes!!)
+                } else {
+                    _response.value = DataState.Failure("Empty or null list")
+                }
+            } catch (e: Exception) {
+                println(e.stackTrace)
+                _response.value = DataState.Failure("no network")
             }
         }
     }

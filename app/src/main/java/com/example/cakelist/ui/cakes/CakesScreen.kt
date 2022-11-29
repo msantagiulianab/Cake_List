@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,9 +18,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -41,35 +40,55 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.cakelist.R
 import com.example.cakelist.models.Cake
 import com.example.cakelist.sealed.DataState
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun CakesScreen(
     viewModel: CakesViewModel = hiltViewModel(),
     navigationToDetailsScreen: (String) -> Unit
 ) {
+    Refresh(viewModel, navigationToDetailsScreen)
+}
+
+@Composable
+fun Refresh(
+    viewModel: CakesViewModel,
+    navigationToDetailsScreen: (String) -> Unit
+) {
     val cakes by viewModel.cakesState.collectAsState()
 
     val listState = rememberLazyListState()
 
-    CakesScreenContent(
-        dataState = cakes,
-        query = viewModel.query.value,
-        onQueryChanged =
-        { value: String -> viewModel.onQueryChanged(value) },
-        changeSelection =
-        { viewModel.changeSelection() },
-        isButtonSelected = viewModel.selected.value,
-        countQuery =
-        { list: List<Cake> -> viewModel.countQuery(list) },
-        amountResults = viewModel.results.value,
-        changePositionListState =
-        { viewModel.changePositionListState(firstItem = listState.firstVisibleItemIndex) },
-        positionListState = viewModel.positionListState.value,
-        navigationToDetailsScreen =
-        {
-            navigationToDetailsScreen(it.title)
-        }
-    )
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
+
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = viewModel::loadCakes
+    ) {
+        CakesScreenContent(
+            viewModel = viewModel,
+            dataState = cakes,
+            query = viewModel.query.value,
+            onQueryChanged =
+            { value: String -> viewModel.onQueryChanged(value) },
+            changeSelection =
+            { viewModel.changeSelection() },
+            isButtonSelected = viewModel.selected.value,
+            countQuery =
+            { list: List<Cake> -> viewModel.countQuery(list) },
+            amountResults = viewModel.results.value,
+            changePositionListState =
+            { viewModel.changePositionListState(firstItem = listState.firstVisibleItemIndex) },
+            positionListState = viewModel.positionListState.value,
+            navigationToDetailsScreen =
+            {
+                navigationToDetailsScreen(it.title)
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -80,7 +99,6 @@ fun Searchbar(
     changePositionListState: (Int) -> Unit,
     positionListState: LazyListState
 ) {
-    // TODO - not working
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -132,6 +150,7 @@ fun Searchbar(
 
 @Composable
 fun CakesScreenContent(
+    viewModel: CakesViewModel,
     dataState: DataState<List<Cake>, String>,
     query: String,
     onQueryChanged: (String) -> Unit,
@@ -171,10 +190,20 @@ fun CakesScreenContent(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = dataState.message,
-                    fontSize = MaterialTheme.typography.h5.fontSize
-                )
+                Column {
+                    Text(
+                        text = dataState.message,
+                        fontSize = MaterialTheme.typography.h4.fontSize,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Button(
+                        onClick = { viewModel.loadCakes() },
+                        shape = CircleShape,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    ) {
+                        Text(text = stringResource(id = R.string.click_to_refresh))
+                    }
+                }
             }
         }
         else -> {
