@@ -21,10 +21,6 @@ class CakesViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
-    init {
-        loadCakes()
-    }
-
     fun loadCakes() {
         viewModelScope.launch {
             _isLoading.value = true
