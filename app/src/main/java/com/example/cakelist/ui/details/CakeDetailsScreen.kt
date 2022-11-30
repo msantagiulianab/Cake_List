@@ -115,7 +115,7 @@ private fun CakeDetailsHeader(cake: Cake) {
                 Text(
                     text = description,
                     color = colorResource(id = R.color.subtitle_gray),
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.h5
                 )
             }
         }
